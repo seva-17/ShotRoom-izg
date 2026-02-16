@@ -8,7 +8,7 @@ import {
   Sun, Contrast, Sparkles, Zap, FlipHorizontal,
   Grid3X3, Aperture, Film, RotateCcw, Move, Trash2, Upload
 } from 'lucide-react';
-import type { PhotoTemplate, CapturedPhoto, Sticker, PlacedSticker, FilterSettings } from '@/types';
+import type { PhotoTemplate, CapturedPhoto, Sticker, PlacedSticker, FilterSettings, FrameArea } from '@/types';
 import { stickerCategories } from '@/data/stickers';
 import { toast } from 'sonner';
 
@@ -55,9 +55,9 @@ export default function PhotoEditor({
   const allStickers = [...stickers, ...customStickers];
 
   // Canvas dimensions based on template
-  const canvasWidth = 800;
-  const canvasHeight = template.layout.includes('strip') ? 1200 : 
-                       template.layout.includes('polaroid') ? 1000 : 800;
+  const canvasWidth = template.canvasWidth || 800;
+  const canvasHeight = template.canvasHeight || (template.layout.includes('strip') ? 1200 : 
+                       template.layout.includes('polaroid') ? 1000 : 800);
 
   // Initialize canvas with photos
   useEffect(() => {
@@ -78,16 +78,22 @@ export default function PhotoEditor({
     ctx.fillStyle = backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Calculate photo positions based on template layout
-    const photoPositions = calculatePhotoPositions(template, canvas.width, canvas.height);
+    // Get frame areas from template or calculate them
+    const frameAreas = template.frameAreas || calculatePhotoPositions(template, canvas.width, canvas.height).map(pos => ({
+      x: pos.x,
+      y: pos.y,
+      width: pos.width,
+      height: pos.height,
+      radius: 8,
+    }));
 
-    // Draw photos
-    for (let i = 0; i < photos.length; i++) {
+    // Draw photos in frame areas with clipping
+    for (let i = 0; i < photos.length && i < frameAreas.length; i++) {
       const photo = photos[i];
-      const pos = photoPositions[i];
+      const area = frameAreas[i];
       
-      if (photo && pos) {
-        await drawPhotoWithFilters(ctx, photo.dataUrl, pos, filterSettings);
+      if (photo && area) {
+        await drawPhotoWithFiltersClipped(ctx, photo.dataUrl, area, filterSettings);
       }
     }
 
@@ -288,6 +294,128 @@ export default function PhotoEditor({
     });
   };
 
+  // Draw photo with filters and clipping to frame area
+  const drawPhotoWithFiltersClipped = (
+    ctx: CanvasRenderingContext2D, 
+    dataUrl: string, 
+    frameArea: { x: number; y: number; width: number; height: number; radius?: number },
+    filters: FilterSettings
+  ): Promise<void> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        ctx.save();
+        
+        // Create clipping path for frame area with rounded corners
+        ctx.beginPath();
+        const radius = frameArea.radius || 8;
+        ctx.roundRect(frameArea.x, frameArea.y, frameArea.width, frameArea.height, radius);
+        ctx.clip();
+        
+        // Draw image to fit the frame area (cover mode)
+        const imgAspect = img.width / img.height;
+        const frameAspect = frameArea.width / frameArea.height;
+        
+        let drawWidth = frameArea.width;
+        let drawHeight = frameArea.height;
+        let offsetX = 0;
+        let offsetY = 0;
+        
+        if (imgAspect > frameAspect) {
+          // Image is wider - fit height
+          drawWidth = drawHeight * imgAspect;
+          offsetX = -(drawWidth - frameArea.width) / 2;
+        } else {
+          // Image is taller - fit width
+          drawHeight = drawWidth / imgAspect;
+          offsetY = -(drawHeight - frameArea.height) / 2;
+        }
+        
+        // Apply mirror effect
+        if (filters.mirror) {
+          ctx.save();
+          ctx.translate(frameArea.x + frameArea.width, frameArea.y);
+          ctx.scale(-1, 1);
+          ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+          ctx.restore();
+        } else {
+          ctx.drawImage(img, frameArea.x + offsetX, frameArea.y + offsetY, drawWidth, drawHeight);
+        }
+        
+        // Apply filter effects
+        const imageData = ctx.getImageData(frameArea.x, frameArea.y, frameArea.width, frameArea.height);
+        const data = imageData.data;
+        
+        // Brightness
+        if (filters.brightness !== 100) {
+          const brightness = (filters.brightness - 100) * 2.55;
+          for (let i = 0; i < data.length; i += 4) {
+            data[i] = Math.min(255, Math.max(0, data[i] + brightness));
+            data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + brightness));
+            data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + brightness));
+          }
+        }
+        
+        // Contrast
+        if (filters.contrast !== 100) {
+          const contrast = filters.contrast / 100;
+          for (let i = 0; i < data.length; i += 4) {
+            data[i] = Math.min(255, Math.max(0, (data[i] - 128) * contrast + 128));
+            data[i + 1] = Math.min(255, Math.max(0, (data[i + 1] - 128) * contrast + 128));
+            data[i + 2] = Math.min(255, Math.max(0, (data[i + 2] - 128) * contrast + 128));
+          }
+        }
+        
+        // Black and White
+        if (filters.blackAndWhite) {
+          for (let i = 0; i < data.length; i += 4) {
+            const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+            data[i] = gray;
+            data[i + 1] = gray;
+            data[i + 2] = gray;
+          }
+        }
+        
+        // Saturation
+        if (filters.saturation !== 100) {
+          const saturation = filters.saturation / 100;
+          for (let i = 0; i < data.length; i += 4) {
+            const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+            data[i] = Math.min(255, Math.max(0, data[i] * saturation + gray * (1 - saturation)));
+            data[i + 1] = Math.min(255, Math.max(0, data[i + 1] * saturation + gray * (1 - saturation)));
+            data[i + 2] = Math.min(255, Math.max(0, data[i + 2] * saturation + gray * (1 - saturation)));
+          }
+        }
+        
+        ctx.putImageData(imageData, frameArea.x, frameArea.y);
+        
+        // Apply vintage filter on top
+        if (filters.vintage) {
+          ctx.globalCompositeOperation = 'overlay';
+          ctx.fillStyle = 'rgba(255, 200, 150, 0.3)';
+          ctx.fillRect(frameArea.x, frameArea.y, frameArea.width, frameArea.height);
+        }
+        
+        // Apply VHS filter
+        if (filters.vhs) {
+          ctx.globalCompositeOperation = 'screen';
+          ctx.fillStyle = 'rgba(255, 0, 100, 0.1)';
+          ctx.fillRect(frameArea.x + 2, frameArea.y, frameArea.width, frameArea.height);
+          ctx.fillStyle = 'rgba(0, 255, 100, 0.1)';
+          ctx.fillRect(frameArea.x - 2, frameArea.y, frameArea.width, frameArea.height);
+        }
+        
+        ctx.restore();
+        resolve();
+      };
+      img.onerror = () => {
+        console.error('Failed to load image:', dataUrl);
+        resolve();
+      };
+      img.src = dataUrl;
+    });
+  };
+
   // Draw sticker on canvas - more responsive
   const drawSticker = (ctx: CanvasRenderingContext2D, sticker: PlacedSticker): Promise<void> => {
     return new Promise((resolve) => {
@@ -355,8 +483,8 @@ export default function PhotoEditor({
       img.crossOrigin = 'anonymous';
       img.onload = () => {
         ctx.save();
-        // Draw template image as overlay
-        ctx.globalAlpha = 0.95;
+        // Draw template image as overlay with full opacity to show frame properly
+        ctx.globalAlpha = 1;
         ctx.drawImage(img, 0, 0, width, height);
         ctx.restore();
         resolve();

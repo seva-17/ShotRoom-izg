@@ -1,5 +1,13 @@
 export type AppStep = 'home' | 'template' | 'camera' | 'capture' | 'edit' | 'preview' | 'download';
 
+export interface FrameArea {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  radius?: number;
+}
+
 export interface PhotoTemplate {
   id: string;
   name: string;
@@ -8,6 +16,9 @@ export interface PhotoTemplate {
   frameImage?: string;
   previewImage: string;
   category: 'korean' | 'polaroid' | 'scrapbook' | 'film' | 'grid';
+  frameAreas?: FrameArea[];
+  canvasWidth?: number;
+  canvasHeight?: number;
 }
 
 export interface CapturedPhoto {
