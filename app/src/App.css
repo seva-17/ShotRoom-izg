@@ -1,0 +1,473 @@
+/* Cute 3D Photobooth Styles */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 182, 193, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #FFB6C1, #FF69B4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #FF69B4, #FF1493);
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.float-element {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Pulse glow animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 105, 180, 0.8);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Bounce in animation */
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bounce-in {
+  animation: bounce-in 0.6s ease-out;
+}
+
+/* Slide up animation */
+@keyframes slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slide-up 0.5s ease-out;
+}
+
+/* Sparkle animation */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+.sparkle {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+/* Wiggle animation */
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+.wiggle {
+  animation: wiggle 0.5s ease-in-out infinite;
+}
+
+/* Heart beat animation */
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.1);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+.heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+/* Meteor Shower Animation */
+@keyframes meteor-fall {
+  0% {
+    transform: translateX(0) translateY(0) rotate(-45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-500px) translateY(500px) rotate(-45deg);
+    opacity: 0;
+  }
+}
+
+.meteor {
+  position: absolute;
+  width: 4px;
+  height: 100px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+  border-radius: 50%;
+  animation: meteor-fall linear forwards;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8),
+              0 0 20px 4px rgba(135, 206, 250, 0.5);
+}
+
+/* Sakura Petal Animation */
+@keyframes sakura-fall {
+  0% {
+    transform: translateY(-100px) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(25vh) translateX(50px) rotate(90deg);
+  }
+  50% {
+    transform: translateY(50vh) translateX(-30px) rotate(180deg);
+  }
+  75% {
+    transform: translateY(75vh) translateX(40px) rotate(270deg);
+  }
+  100% {
+    transform: translateY(100vh) translateX(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.sakura-petal {
+  position: absolute;
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 50%, #FF69B4 100%);
+  border-radius: 50% 0 50% 50%;
+  animation: sakura-fall linear forwards;
+  opacity: 0.8;
+  box-shadow: 0 0 5px rgba(255, 182, 193, 0.5);
+}
+
+.sakura-petal::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 80%;
+  background: rgba(255, 105, 180, 0.3);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #FF69B4, #9370DB, #FF1493);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 3D perspective container */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Transform styles */
+.transform-3d {
+  transform-style: preserve-3d;
+}
+
+/* Custom button hover effects */
+.btn-cute {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-cute::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn-cute:hover::before {
+  left: 100%;
+}
+
+/* Sticker drag styles */
+.sticker-drag {
+  cursor: grab;
+  transition: transform 0.2s ease;
+}
+
+.sticker-drag:active {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+
+/* Canvas container */
+.canvas-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 
+    0 10px 40px rgba(255, 105, 180, 0.3),
+    inset 0 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+/* Template card hover */
+.template-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.template-card:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+/* Filter badge */
+.filter-badge {
+  transition: all 0.2s ease;
+}
+
+.filter-badge:hover {
+  transform: scale(1.05);
+}
+
+/* Countdown number */
+.countdown-number {
+  font-size: 8rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 
+    0 0 20px rgba(255, 105, 180, 0.8),
+    0 0 40px rgba(255, 105, 180, 0.6),
+    0 0 60px rgba(255, 105, 180, 0.4);
+  animation: bounce-in 0.5s ease-out;
+}
+
+/* Flash effect */
+.flash-effect {
+  animation: flash 0.15s ease-out;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Photo strip frame */
+.photo-strip-frame {
+  background: linear-gradient(135deg, #FFB6C1, #FFC0CB);
+  padding: 12px;
+  border-radius: 20px;
+  box-shadow: 
+    0 20px 60px rgba(255, 105, 180, 0.4),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Dark mode adjustments */
+.dark .photo-strip-frame {
+  background: linear-gradient(135deg, #4a1d3a, #5a2d4a);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .countdown-number {
+    font-size: 5rem;
+  }
+  
+  .float-element {
+    display: none;
+  }
+  
+  .meteor {
+    height: 60px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+}
+
+/* Selection styles */
+::selection {
+  background: rgba(255, 105, 180, 0.3);
+  color: inherit;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid #FF69B4;
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+button:disabled,
+button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 3px solid rgba(255, 105, 180, 0.3);
+  border-top-color: #FF69B4;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Confetti animation placeholder */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+
+/* Template thumbnail styles */
+.template-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.template-card:hover .template-thumbnail {
+  transform: scale(1.05);
+}
+
+/* Sticker image in grid */
+.sticker-grid-item {
+  transition: all 0.2s ease;
+}
+
+.sticker-grid-item:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+}
+
+/* Background color picker */
+.bg-color-btn {
+  transition: all 0.2s ease;
+}
+
+.bg-color-btn:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
